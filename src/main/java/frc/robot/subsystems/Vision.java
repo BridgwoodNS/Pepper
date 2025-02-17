@@ -6,6 +6,13 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.DoubleArrayPublisher;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 
@@ -14,6 +21,11 @@ public class Vision extends SubsystemBase {
   boolean useMegaTag2 = true;
   boolean doRejectUpdate = false;
   CommandSwerveDrivetrain m_drive;
+  String ll = "limelight";
+
+
+   private final NetworkTable table = NetworkTableInstance.getDefault().getTable("Pose");
+  private final DoubleArrayPublisher limelightPub = table.getDoubleArrayTopic("llPose").publish();
 
 
 
@@ -26,12 +38,12 @@ public class Vision extends SubsystemBase {
 
   }
 
-  public void setVisionEnabled(boolean enabled) {
-    isVisionEnabled = enabled;
+  public void setVisionEnabled(boolean useVision) {
+    isVisionEnabled = useVision;
   }
 
-  public void setUseMegaTag2(boolean use) {
-    useMegaTag2 = use;
+  public void setUseMegaTag2(boolean useTwo) {
+    useMegaTag2 = useTwo;
   }
 
   public void setRejectUpdate(boolean reject) {
@@ -66,6 +78,7 @@ public class Vision extends SubsystemBase {
         m_drive.addVisionMeasurement(
             mt1.pose,
             mt1.timestampSeconds);
+            publishToField(mt1);
       }
     }
     else if (useMegaTag2 == true)
@@ -86,13 +99,63 @@ public class Vision extends SubsystemBase {
         m_drive.addVisionMeasurement(
             mt2.pose,
             mt2.timestampSeconds);
+            publishToField(mt2);
+            
+
       }
     }
+    
   
   }
+
+  public double getTxOfNearestAprilTag() {
+    return LimelightHelpers.getTX(ll);
+}
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    if(DriverStation.isDisabled()){
+      blinkLEDS().schedule();
+      useMegaTag2 = false;
+      
+    }else
+    {
+      ledsOn().schedule();
+      useMegaTag2 = true;
+    }
+
+    if(isVisionEnabled)
+    {
+      updateOdometry();
+    }
   }
+
+
+  public Command blinkLEDS() {
+    return runOnce(() -> LimelightHelpers.setLEDMode_ForceBlink(ll))
+        .andThen(Commands.waitSeconds(2))
+        .andThen(() -> LimelightHelpers.setLEDMode_ForceOff(ll));
+  }
+
+
+  public Command ledsOff() {
+    return runOnce(() -> LimelightHelpers.setLEDMode_ForceOff(ll));
+  }
+
+  public Command ledsOn() {
+    return runOnce(() -> LimelightHelpers.setLEDMode_ForceOn(ll));
+  }
+
+
+
+  private void publishToField(LimelightHelpers.PoseEstimate limelightMeasurement) {
+    // If you have a Field2D you can easily push it that way here.
+    limelightPub.set(new double[] {
+      limelightMeasurement.pose.getX(),
+      limelightMeasurement.pose.getY(),
+      limelightMeasurement.pose.getRotation().getDegrees()
+    });
+  }
+
 }
