@@ -20,6 +20,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.MailBox;
 import frc.robot.subsystems.Vision;
 
 public class RobotContainer {
@@ -43,6 +45,9 @@ public class RobotContainer {
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public final Vision vision = new Vision(drivetrain);
+    public final Elevator elevator = new Elevator();
+    public final MailBox mailbox = new MailBox();
+    
 
 
 
@@ -90,6 +95,8 @@ public class RobotContainer {
         joystick.pov(180).whileTrue(drivetrain.applyRequest(() ->
             forwardStraight.withVelocityX(-0.5).withVelocityY(0))
         );
+
+        joystick.y().onTrue(elevator.setElevatorToL4Command());
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.

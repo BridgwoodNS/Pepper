@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 
 public class Vision extends SubsystemBase {
-  boolean isVisionEnabled = true;
+  boolean isVisionEnabled = false;
   boolean useMegaTag2 = true;
   boolean doRejectUpdate = false;
   CommandSwerveDrivetrain m_drive;
