@@ -10,6 +10,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -23,6 +24,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.MailBox;
 import frc.robot.subsystems.Vision;
+
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -50,6 +52,8 @@ public class RobotContainer {
     
 
 
+    
+
 
 
 
@@ -61,6 +65,16 @@ public class RobotContainer {
     private final SendableChooser<Command> autoChooser;
 
     public RobotContainer() {
+
+        //Register Named Commands for Auto
+        NamedCommands.registerCommand("l4", elevator.setElevatorToL4Command());
+        NamedCommands.registerCommand("l3", elevator.setElevatorToL3Command());
+        NamedCommands.registerCommand("l2", elevator.setElevatorToL2Command());
+        NamedCommands.registerCommand("l1", elevator.setElevatorToL1Command());
+        
+
+
+
         autoChooser = AutoBuilder.buildAutoChooser("Tests");
         SmartDashboard.putData("Auto Mode", autoChooser);
 
