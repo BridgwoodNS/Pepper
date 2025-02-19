@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.CustomDriveCommands;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.MailBox;
 import frc.robot.subsystems.Vision;
@@ -51,7 +52,6 @@ public class RobotContainer {
     public final MailBox mailbox = new MailBox();
     
 
-
     
 
 
@@ -77,6 +77,8 @@ public class RobotContainer {
 
         autoChooser = AutoBuilder.buildAutoChooser("Tests");
         SmartDashboard.putData("Auto Mode", autoChooser);
+        autoChooser.addOption("spinTestLOL", CustomDriveCommands.wheelRadiusCharacterization(drivetrain));
+        
 
         configureBindings();
     }
@@ -111,6 +113,7 @@ public class RobotContainer {
         );
 
         joystick.y().onTrue(elevator.setElevatorToL4Command());
+
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
